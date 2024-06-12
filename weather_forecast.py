@@ -126,7 +126,7 @@ if weather_grid:
         location = item.get('id') # location
         location = location.replace("_", " ")
         img_content = item.find('img')
-        url = f'https://www.nea.gov.sg{img_content.get('src')}' # image displaying the weather
+        url = f"https://www.nea.gov.sg{img_content.get('src')}" # image displaying the weather
 
         locations.append(location)
         urls.append(url)
