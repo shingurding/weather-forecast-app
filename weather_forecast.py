@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from selenium import webdriver
-from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup # for webscrapping
 import warnings
@@ -26,32 +26,30 @@ st.markdown(global_css, unsafe_allow_html=True)
 st.title("Weather Forecast")
 
 # headless browser so it will not launch the website
-options = ChromeOptions()
+options = Options()
 options.add_argument('--headless')
 
 date_url = "https://www.google.com/search?q=today%27s+date&oq=todays&gs_lcrp=EgZjaHJvbWUqEwgDEEUYChg7GEMYsQMYgAQYigUyBggAEEUYOTISCAEQABgUGIcCGLEDGMkDGIAEMg8IAhAAGAoYgwEYsQMYgAQyEwgDEEUYChg7GEMYsQMYgAQYigUyDAgEEAAYChixAxiABDIPCAUQABgUGIcCGJIDGIAEMg8IBhAAGAoYgwEYsQMYgAQyCQgHEAAYChiABDIPCAgQABgKGIMBGLEDGIAEMg8ICRAAGAoYgwEYsQMYgATSAQg0MTY1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8"
+weather_url = "https://www.nea.gov.sg/corporate-functions/weather"
+
 date_driver = webdriver.Chrome(options=options)
+weather_driver = webdriver.Chrome(options=options)
+
 date_driver.get(date_url)
 date_driver.implicitly_wait(10)
 date_content = date_driver.page_source
-
 date_soup = BeautifulSoup(date_content, 'html.parser')
-
 date = date_soup.find(class_="vk_bk dDoNo FzvWSb").text
 st.write(f'## {date}')
 
-url = "https://www.nea.gov.sg/corporate-functions/weather"
-driver = webdriver.Chrome(options=options)
-driver.get(url)
-driver.implicitly_wait(10) # wait for 10 seconds for the elements to load
-html_content = driver.page_source
-
-soup = BeautifulSoup(html_content, 'html.parser')
-
-day_forecast_box = soup.find(id="weather_desc")
-temperature_box = soup.find(id="temperature")
-wind_direction_box = soup.find(id="wind_direction")
-wind_speed_box = soup.find(id="wind_speed")
+weather_driver.get(weather_url)
+weather_driver.implicitly_wait(10) # wait for 10 seconds for the elements to load
+html_content = weather_driver.page_source
+weather_soup = BeautifulSoup(html_content, 'html.parser')
+day_forecast_box = weather_soup.find(id="weather_desc")
+temperature_box = weather_soup.find(id="temperature")
+wind_direction_box = weather_soup.find(id="wind_direction")
+wind_speed_box = weather_soup.find(id="wind_speed")
 
 data = {
     "24-hour Weather Forecast": [day_forecast_box.text],
@@ -76,7 +74,7 @@ st.markdown(styled_table, unsafe_allow_html=True)
 st.write("##### Which days would you like to see?")
 
 days = []
-days_box = soup.find_all(class_="day")
+days_box = weather_soup.find_all(class_="day")
 for day_box in days_box:
     day = day_box.text
     days.append(day)
@@ -117,7 +115,7 @@ for selected_option in selected_options:
 
 
 # getting the weather in each specific location
-weather_grid = soup.find(id="weather-grid")
+weather_grid = weather_soup.find(id="weather-grid")
 
 if weather_grid:
     locations = []
