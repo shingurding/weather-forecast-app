@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from selenium import webdriver
+from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup # for webscrapping
 import warnings
@@ -25,7 +26,7 @@ st.markdown(global_css, unsafe_allow_html=True)
 st.title("Weather Forecast")
 
 # headless browser so it will not launch the website
-options = webdriver.ChromeOptions()
+options = ChromeOptions()
 options.add_argument('--headless')
 
 date_url = "https://www.google.com/search?q=today%27s+date&oq=todays&gs_lcrp=EgZjaHJvbWUqEwgDEEUYChg7GEMYsQMYgAQYigUyBggAEEUYOTISCAEQABgUGIcCGLEDGMkDGIAEMg8IAhAAGAoYgwEYsQMYgAQyEwgDEEUYChg7GEMYsQMYgAQYigUyDAgEEAAYChixAxiABDIPCAUQABgUGIcCGJIDGIAEMg8IBhAAGAoYgwEYsQMYgAQyCQgHEAAYChiABDIPCAgQABgKGIMBGLEDGIAEMg8ICRAAGAoYgwEYsQMYgATSAQg0MTY1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8"
