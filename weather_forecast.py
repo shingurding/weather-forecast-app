@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
+from datetime import date
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -22,26 +24,20 @@ st.markdown(global_css, unsafe_allow_html=True)
 
 st.title("Weather Forecast")
 
+# getting today's day and date
+date = datetime.today().date()
+formatted_date = date.strftime("%d %B %Y")
+day = date.strftime("%A")
+st.write(f'## {day}, {formatted_date}')
+
 # headless browser so it will not launch the website
 options = Options()
 options.add_argument('--headless')
 
-date_url = "https://www.google.com/search?q=today%27s+date&oq=todays&gs_lcrp=EgZjaHJvbWUqEwgDEEUYChg7GEMYsQMYgAQYigUyBggAEEUYOTISCAEQABgUGIcCGLEDGMkDGIAEMg8IAhAAGAoYgwEYsQMYgAQyEwgDEEUYChg7GEMYsQMYgAQYigUyDAgEEAAYChixAxiABDIPCAUQABgUGIcCGJIDGIAEMg8IBhAAGAoYgwEYsQMYgAQyCQgHEAAYChiABDIPCAgQABgKGIMBGLEDGIAEMg8ICRAAGAoYgwEYsQMYgATSAQg0MTY1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8"
 weather_url = "https://www.nea.gov.sg/corporate-functions/weather"
 
-chromedriver_path = "/Users/dsaid/Downloads/chromedriver-mac-arm64/chromedriver"
-
 # Initialize Chrome WebDriver with the specified path
-date_driver = webdriver.Chrome(executable_path=chromedriver_path, options=options)
-weather_driver = webdriver.Chrome(executable_path=chromedriver_path, options=options)
-
-date_driver.get(date_url)
-date_driver.implicitly_wait(10)
-date_content = date_driver.page_source
-date_soup = BeautifulSoup(date_content, 'html.parser')
-date = date_soup.find(class_="vk_bk dDoNo FzvWSb").text
-st.write(f'## {date}')
-
+weather_driver = webdriver.Chrome(options=options)
 weather_driver.get(weather_url)
 weather_driver.implicitly_wait(10) # wait for 10 seconds for the elements to load
 html_content = weather_driver.page_source
