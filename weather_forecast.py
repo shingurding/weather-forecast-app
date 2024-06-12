@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup # for webscrapping
 import warnings
@@ -27,15 +25,16 @@ st.markdown(global_css, unsafe_allow_html=True)
 st.title("Weather Forecast")
 
 # headless browser so it will not launch the website
-service = Service()
-options = Options()
-options.add_argument('--headless')
+
+# service = Service()
+# options = Options()
+# options.add_argument('--headless')
 
 date_url = "https://www.google.com/search?q=today%27s+date&oq=todays&gs_lcrp=EgZjaHJvbWUqEwgDEEUYChg7GEMYsQMYgAQYigUyBggAEEUYOTISCAEQABgUGIcCGLEDGMkDGIAEMg8IAhAAGAoYgwEYsQMYgAQyEwgDEEUYChg7GEMYsQMYgAQYigUyDAgEEAAYChixAxiABDIPCAUQABgUGIcCGJIDGIAEMg8IBhAAGAoYgwEYsQMYgAQyCQgHEAAYChiABDIPCAgQABgKGIMBGLEDGIAEMg8ICRAAGAoYgwEYsQMYgATSAQg0MTY1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8"
 weather_url = "https://www.nea.gov.sg/corporate-functions/weather"
 
-date_driver = webdriver.Chrome(service=service, options=options)
-weather_driver = webdriver.Chrome(service=service, options=options)
+date_driver = webdriver.Chrome()
+weather_driver = webdriver.Chrome()
 
 date_driver.get(date_url)
 date_driver.implicitly_wait(10)
