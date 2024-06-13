@@ -59,7 +59,7 @@ html_table = df.to_html(header=False, classes='centered-table')
 # center the box horizontally within its parent container and the content in the box is also centered
 styled_table = f"""
 <div style='text-align: center;'>
-    <div style='display: inline-block; text-align: center; background-color: white;'>
+    <div style='display: inline-block; text-align: center; border: 1px solid black;'>
         {html_table}
     </div>
 </div>
@@ -82,31 +82,36 @@ for option in days:
     if selected:
         selected_options.append(option) # getting the list of selection options
 
+all_options = []
 for selected_option in selected_options:
     option_information = []
     for day_box in days_box:
         # if that day is selected, extract all the weather details from the website
         if day_box.text == selected_option:
+            option_information.append(selected_option) # add the day
+
             parent_div = day_box.find_parent("div", class_="stats-data--4days__item")
             info = parent_div.find(class_="info").text
-            option_information.append(info)
+            option_information.append(info) # add the weather information
 
             temp_box = parent_div.find(class_="temperature")
             for item in temp_box.find_all(class_="info"): # finds the temperature and wind information
-                option_information.append(item.text.replace("\n", ""))
+                option_information.append(item.text.replace("\n", "")) # add the temperature and wind speed
 
-    option_df = pd.DataFrame(option_information, ["Weather Information", "Temperature", "Wind Information"])
-    option_html = option_df.to_html(header=False)
+    information_str = "<br>".join(option_information)
+    all_options.append(information_str)
 
-    styled_table = f"""
-    <div>
-        <div style='display: inline-block; text-align: center; background-color: white;'>
-            {option_html}
-        </div>
+all_options_df = pd.DataFrame(all_options).transpose()
+all_options_html = all_options_df.to_html(header=False, index=False, escape=False)
+
+styled_table = f"""
+<div style='text-align: center;'>
+    <div style='display: inline-block; text-align: center; border: 1px solid black;'>
+        {all_options_html}
     </div>
-    """
-    st.write(f"##### {selected_option}:")
-    st.markdown(styled_table, unsafe_allow_html=True)     
+</div>
+"""
+st.markdown(styled_table, unsafe_allow_html=True)  
 
 
 
@@ -139,3 +144,51 @@ if weather_grid:
     st.markdown(f"<div style='text-align: center;'><img src='{url}' alt='Weather Image'></div>", unsafe_allow_html=True)
 
     # df = pd.DataFrame(table_data, columns=["Location", "Weather"])
+ 
+st.write("## UV Index")
+uv_box = weather_soup.find("div", class_="section--white has-match-height weather-widget row")
+uv_index = uv_box.find(class_="circle__container").text
+uv_condition = uv_box.find(class_="text").text
+
+uv_color = ''
+if int(uv_index) <= 2:
+    uv_color = 'green'
+elif int(uv_index) <= 5:
+    uv_color = 'yellow'
+elif int(uv_index) <= 7:
+    uv_color = 'orange'
+elif int(uv_index) <= 10:
+    uv_color = 'red'
+else: 
+    uv_color = 'purple'
+
+circle_style = f"""
+<style>
+    .circle {{
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        font-size: 50px;
+        color: {uv_color};
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 8px solid {uv_color};
+    }}
+
+    .condition {{
+        font-size: 30px;
+        color: {uv_color}; 
+        justify-content: center;
+    }}
+</style>
+
+<div class='circle';>
+    {uv_index}
+</div>
+
+<div class='condition';>
+    {uv_condition}
+</div>
+"""
+st.markdown(circle_style, unsafe_allow_html=True)
