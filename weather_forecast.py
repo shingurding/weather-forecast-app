@@ -30,16 +30,27 @@ formatted_date = date.strftime("%d %B %Y")
 day = date.strftime("%A")
 st.write(f'## {day}, {formatted_date}')
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+chromedriver_path = os.path.join(current_dir, 'bin', 'chromedriver')
+
 # headless browser so it will not launch the website
 options = Options()
 options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+
+service = Service(chromedriver_path)
 
 weather_url = "https://www.nea.gov.sg/corporate-functions/weather"
+try:
+    weather_driver = webdriver.Chrome(service=service, options=options)
+    weather_driver.get(weather_url)
+    weather_driver.implicitly_wait(10) # wait for 10 seconds for the elements to load
+    weather_driver.quit()
+except Exception as e:
+    st.error(f"An error occurred: {e}")
 
 # Initialize Chrome WebDriver with the specified path
-weather_driver = webdriver.Chrome(options=options)
-weather_driver.get(weather_url)
-weather_driver.implicitly_wait(10) # wait for 10 seconds for the elements to load
 html_content = weather_driver.page_source
 weather_soup = BeautifulSoup(html_content, 'html.parser')
 day_forecast_box = weather_soup.find(id="weather_desc")
