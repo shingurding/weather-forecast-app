@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 from datetime import date
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup # for webscrapping
