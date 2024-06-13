@@ -46,14 +46,21 @@ service = Service(chromedriver_path)
 weather_url = "https://www.nea.gov.sg/corporate-functions/weather"
 try:
     weather_driver = webdriver.Chrome(service=service, options=options)
+    st.write("ChromeDriver initialized successfully")
     weather_driver.get(weather_url)
-    weather_driver.implicitly_wait(10) # wait for 10 seconds for the elements to load
+    st.write("Page loaded successfully")
+    
+    # Capture page source
+    html_content = weather_driver.page_source
     weather_driver.quit()
+    
+    # Display the page source (or do whatever processing you need)
+    st.markdown(html_content, unsafe_allow_html=True)
+    
 except Exception as e:
     st.error(f"An error occurred: {e}")
 
 # Initialize Chrome WebDriver with the specified path
-html_content = weather_driver.page_source
 weather_soup = BeautifulSoup(html_content, 'html.parser')
 day_forecast_box = weather_soup.find(id="weather_desc")
 temperature_box = weather_soup.find(id="temperature")
